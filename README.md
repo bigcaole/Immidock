@@ -16,13 +16,13 @@ ImmiDock 是一个用于迁移 Docker 与 1Panel 应用环境的工具。
 
 ## 安装方式
 
-### 方式1：一键安装
+### 方式1：一键安装（小白推荐）
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/bigcaole/Immidock/main/install.sh | bash
 ```
 
-### 方式2：下载 Release
+### 方式2：下载 Release（二进制）
 
 到 GitHub Releases 下载：
 
@@ -35,10 +35,19 @@ chmod +x immidock
 sudo mv immidock /usr/local/bin/
 ```
 
-### 方式3：pip 安装
+### 方式3：pip 安装（适合有 Python 环境）
 
 ```bash
 pip install immidock
+```
+
+### 方式4：源码安装（适合进阶用户）
+
+```bash
+git clone https://github.com/bigcaole/Immidock.git
+cd ImmiDock
+pip install -r requirements.txt
+python -m dockshifter.cli.main doctor
 ```
 
 ## 使用示例
@@ -49,6 +58,17 @@ immidock pack --output backup.dsh
 immidock restore backup.dsh
 immidock migrate root@server
 ```
+
+## 发布说明（维护者）
+
+使用 tag 触发 Release 构建：
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+GitHub Actions 会自动构建二进制并发布到 Releases。
 
 # 小白迁移教程（一步一步）
 
