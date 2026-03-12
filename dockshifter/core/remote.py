@@ -14,11 +14,11 @@ import docker
 from docker.errors import DockerException
 from jsonschema import validate
 
-from immidock.core.auditor import generate_manifest
-from immidock.core.bundler import build_bundle
-from immidock.core.incremental import incremental_sync
-from immidock.utils.i18n import translate
-from immidock.utils.logger import setup_logger
+from dockshifter.core.auditor import generate_manifest
+from dockshifter.core.bundler import build_bundle
+from dockshifter.core.incremental import incremental_sync
+from dockshifter.utils.i18n import translate
+from dockshifter.utils.logger import setup_logger
 
 try:  # pragma: no cover - optional dependency
     from tqdm import tqdm

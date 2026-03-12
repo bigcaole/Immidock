@@ -11,9 +11,9 @@ from typing import Any, Dict, List, Optional, Set
 import docker
 from docker.errors import DockerException
 
-from immidock.utils.checksum import generate_checksum
-from immidock.utils.i18n import translate
-from immidock.utils.logger import setup_logger
+from dockshifter.utils.checksum import generate_checksum
+from dockshifter.utils.i18n import translate
+from dockshifter.utils.logger import setup_logger
 
 try:  # pragma: no cover - optional dependency
     from tqdm import tqdm

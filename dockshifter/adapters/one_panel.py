@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-from immidock.utils.logger import setup_logger
+from dockshifter.utils.logger import setup_logger
 
 SYNC_ENDPOINT = "http://127.0.0.1:10086/api/v1/apps/sync"
 

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import logging
 
-from immidock.utils.i18n import translate
-from immidock.utils.logfile import get_log_handler
+from dockshifter.utils.i18n import translate
+from dockshifter.utils.logfile import get_log_handler
 
 
 class TranslatedLogger(logging.LoggerAdapter):

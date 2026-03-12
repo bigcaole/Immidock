@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Set
 import docker
 from docker.errors import DockerException
 
-from immidock.utils.logger import setup_logger
+from dockshifter.utils.logger import setup_logger
 
 
 def _collect_mounts(manifest: Dict[str, Any]) -> List[Dict[str, str]]:

@@ -1,9 +1,9 @@
-name: build
+name: release
 
 on:
   push:
-  release:
-    types: [created]
+    tags:
+      - "v*"
 
 jobs:
   build:
@@ -25,10 +25,18 @@ jobs:
 
       - name: Build binary
         run: |
-          pyinstaller -F dockshifter/cli/main.py --name immidock
+          pyinstaller --onefile -n immidock dockshifter/cli/main.py
+          mv dist/immidock immidock-linux-amd64
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: immidock
-          path: dist/immidock
+          name: immidock-linux-amd64
+          path: immidock-linux-amd64
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: immidock-linux-amd64
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

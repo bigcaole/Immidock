@@ -18,11 +18,11 @@ from docker.errors import DockerException
 from docker.types import IPAMConfig, IPAMPool, Mount
 from jsonschema import validate
 
-from immidock.adapters.one_panel import sync_apps
-from immidock.core.network_mgr import resolve_network_conflicts
-from immidock.utils.checksum import verify_checksum
-from immidock.utils.i18n import translate
-from immidock.utils.logger import setup_logger
+from dockshifter.adapters.one_panel import sync_apps
+from dockshifter.core.network_mgr import resolve_network_conflicts
+from dockshifter.utils.checksum import verify_checksum
+from dockshifter.utils.i18n import translate
+from dockshifter.utils.logger import setup_logger
 
 try:  # pragma: no cover - optional dependency
     from tqdm import tqdm

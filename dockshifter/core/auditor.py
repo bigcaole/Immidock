@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Set
 import docker
 from docker.errors import DockerException
 
-from immidock.utils.logger import setup_logger
+from dockshifter.utils.logger import setup_logger
 
 
 def _safe_stat(path: str, logger) -> Optional[os.stat_result]:

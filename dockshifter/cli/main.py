@@ -16,14 +16,14 @@ import docker
 from docker.errors import DockerException
 from jsonschema import ValidationError, validate
 
-from immidock.core.auditor import generate_manifest
-from immidock.core.bundler import build_bundle
-from immidock.core.remote import migrate_to_host
-from immidock.core.restorer import restore_bundle
-from immidock.utils.i18n import set_language, translate
-from immidock.utils.logger import setup_logger
-from immidock.utils.system import check_binary_exists
-from immidock.version import __version__
+from dockshifter.core.auditor import generate_manifest
+from dockshifter.core.bundler import build_bundle
+from dockshifter.core.remote import migrate_to_host
+from dockshifter.core.restorer import restore_bundle
+from dockshifter.utils.i18n import set_language, translate
+from dockshifter.utils.logger import setup_logger
+from dockshifter.utils.system import check_binary_exists
+from dockshifter.version import __version__
 
 
 def _load_schema(schema_path: Path) -> Dict[str, Any]:
@@ -386,7 +386,10 @@ def _clean_command(logger) -> int:
 
 def _build_parser() -> argparse.ArgumentParser:
     """Build the CLI argument parser."""
-    parser = argparse.ArgumentParser(prog="immidock")
+    parser = argparse.ArgumentParser(
+        prog="immidock",
+        description="ImmiDock Docker Migration Tool",
+    )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument(
         "--lang",

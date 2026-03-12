@@ -9,7 +9,7 @@ from typing import Any, Dict, Iterable, Optional, Set
 import docker
 from docker.errors import DockerException
 
-from immidock.utils.logger import setup_logger
+from dockshifter.utils.logger import setup_logger
 
 
 def _collect_existing_subnets(client: docker.DockerClient, logger) -> Set[ipaddress._BaseNetwork]:
