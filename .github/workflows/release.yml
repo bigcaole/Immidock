@@ -10,37 +10,60 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
+        if: matrix.arch == 'amd64'
         with:
           python-version: "3.10"
 
       - name: Install dependencies
+        if: matrix.arch == 'amd64'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build binary
+      - name: Build binary (amd64)
+        if: matrix.arch == 'amd64'
         run: |
           pyinstaller --onefile -n immidock dockshifter/cli/main.py
-          mv dist/immidock immidock-linux-amd64
+          mv dist/immidock immidock-linux-${{ matrix.arch }}
+
+      - name: Set up QEMU (arm64)
+        if: matrix.arch == 'arm64'
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build binary (arm64 via container)
+        if: matrix.arch == 'arm64'
+        run: |
+          docker run --rm --platform linux/arm64 \
+            -v "${{ github.workspace }}:/work" \
+            -w /work ubuntu:20.04 \
+            bash -lc "apt-get update && \
+              apt-get install -y python3 python3-pip build-essential && \
+              pip3 install --upgrade pip && \
+              pip3 install -r requirements.txt pyinstaller && \
+              pyinstaller --onefile -n immidock dockshifter/cli/main.py && \
+              mv dist/immidock immidock-linux-${{ matrix.arch }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: immidock-linux-amd64
-          path: immidock-linux-amd64
+          name: immidock-linux-${{ matrix.arch }}
+          path: immidock-linux-${{ matrix.arch }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: immidock-linux-amd64
+          files: immidock-linux-${{ matrix.arch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

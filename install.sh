@@ -16,6 +16,9 @@ case "$ARCH" in
   x86_64|amd64)
     ASSET="immidock-linux-amd64"
     ;;
+  aarch64|arm64)
+    ASSET="immidock-linux-arm64"
+    ;;
   *)
     echo "Unsupported architecture: $ARCH"
     exit 1
@@ -54,3 +57,8 @@ sudo mv "$tmpfile" "$INSTALL_PATH"
 trap - EXIT
 
 echo "ImmiDock installed successfully"
+
+echo "Running immidock doctor to verify installation..."
+if ! immidock doctor; then
+  echo "immidock doctor reported issues. Please check dependencies (Docker/tar/zstd/rsync/ssh)."
+fi
