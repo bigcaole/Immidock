@@ -38,11 +38,11 @@ def _resolve_volume_mountpoint(
     try:
         volume = client.volumes.get(source)
     except DockerException as exc:
-        logger.warning("Failed to inspect volume %s: %s", source, exc)
+        logger.warning("failed_inspect_volume", source, exc)
         return None
     mountpoint = volume.attrs.get("Mountpoint", "")
     if not mountpoint:
-        logger.warning("Volume %s has no mountpoint", source)
+        logger.warning("volume_no_mountpoint", source)
         return None
     return Path(mountpoint)
 
@@ -64,7 +64,7 @@ def incremental_sync(target: str, manifest: Dict[str, Any]) -> None:
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         raise
 
     mounts = _collect_mounts(manifest)
@@ -83,7 +83,7 @@ def incremental_sync(target: str, manifest: Dict[str, Any]) -> None:
     for bind_path in sorted(bind_paths):
         path = Path(bind_path)
         if not path.exists():
-            logger.warning("Volume path not found: %s", path)
+            logger.warning("volume_path_not_found", path)
             continue
         logger.info("syncing_volume", path)
         _rsync_path(path, target)
@@ -93,7 +93,7 @@ def incremental_sync(target: str, manifest: Dict[str, Any]) -> None:
         if not mountpoint:
             continue
         if not mountpoint.exists():
-            logger.warning("Volume path not found: %s", mountpoint)
+            logger.warning("volume_path_not_found", mountpoint)
             continue
         logger.info("syncing_volume", mountpoint)
         _rsync_path(mountpoint, target)

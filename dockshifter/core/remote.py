@@ -88,7 +88,7 @@ def _estimate_image_size(manifest: Dict[str, Any], logger) -> int:
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.warning("Docker connection failed: %s", exc)
+        logger.warning("docker_connection_failed", exc)
         return 0
 
     total = 0
@@ -97,7 +97,7 @@ def _estimate_image_size(manifest: Dict[str, Any], logger) -> int:
             image = client.images.get(image_ref)
             total += int(image.attrs.get("Size", 0) or 0)
         except DockerException as exc:
-            logger.warning("Unable to inspect image %s: %s", image_ref, exc)
+            logger.warning("unable_inspect_image", image_ref, exc)
     return total
 
 

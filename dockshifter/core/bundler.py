@@ -91,11 +91,11 @@ def _resolve_volume_mountpoint(
     try:
         volume = client.volumes.get(source)
     except DockerException as exc:
-        logger.warning("Failed to inspect volume %s: %s", source, exc)
+        logger.warning("failed_inspect_volume", source, exc)
         return None
     mountpoint = volume.attrs.get("Mountpoint", "")
     if not mountpoint:
-        logger.warning("Volume %s has no mountpoint", source)
+        logger.warning("volume_no_mountpoint", source)
         return None
     return Path(mountpoint)
 
@@ -132,7 +132,7 @@ def build_bundle(manifest: Dict[str, Any], output_path: str, include_volumes: bo
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         raise
 
     if include_volumes:
@@ -156,7 +156,7 @@ def build_bundle(manifest: Dict[str, Any], output_path: str, include_volumes: bo
         ):
             path = Path(bind_path)
             if not path.exists():
-                logger.warning("Volume path not found: %s", path)
+                logger.warning("volume_path_not_found", path)
                 continue
             archive_name = _unique_name(_archive_name_from_path(bind_path), used_names)
             archive_path = volumes_dir / f"{archive_name}.tar.zst"
@@ -169,7 +169,7 @@ def build_bundle(manifest: Dict[str, Any], output_path: str, include_volumes: bo
             if not mountpoint:
                 continue
             if not mountpoint.exists():
-                logger.warning("Volume path not found: %s", mountpoint)
+                logger.warning("volume_path_not_found", mountpoint)
                 continue
             base_name = _archive_name_from_path(source)
             archive_name = _unique_name(base_name, used_names)
@@ -188,7 +188,7 @@ def build_bundle(manifest: Dict[str, Any], output_path: str, include_volumes: bo
             text=True,
         )
         if result.returncode != 0:
-            logger.error("Image export failed for %s: %s", image_ref, result.stderr.strip())
+            logger.error("image_export_failed", image_ref, result.stderr.strip())
             raise RuntimeError(f"Docker image export failed for {image_ref}")
 
     output = Path(output_path).expanduser().resolve()

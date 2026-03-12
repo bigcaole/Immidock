@@ -18,11 +18,11 @@ def _safe_stat(path: str, logger) -> Optional[os.stat_result]:
     try:
         return os.stat(path)
     except FileNotFoundError:
-        logger.warning("Mount source not found: %s", path)
+        logger.warning("mount_source_not_found", path)
     except PermissionError:
-        logger.warning("Permission denied while stat'ing mount source: %s", path)
+        logger.warning("permission_denied_stat", path)
     except OSError as exc:
-        logger.warning("Failed to stat mount source %s: %s", path, exc)
+        logger.warning("failed_stat_mount", path, exc)
     return None
 
 
@@ -81,7 +81,7 @@ def _collect_mounts(container, client, logger) -> List[Dict[str, Any]]:
                     volume = client.volumes.get(volume_name)
                     mountpoint = volume.attrs.get("Mountpoint", "")
                 except DockerException as exc:
-                    logger.warning("Failed to inspect volume %s: %s", volume_name, exc)
+                    logger.warning("failed_inspect_volume", volume_name, exc)
             source = mountpoint or mount.get("Source", "")
             entry = {
                 "type": "volume",
@@ -98,7 +98,7 @@ def generate_manifest() -> Dict[str, Any]:
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         raise
 
     try:
@@ -107,7 +107,7 @@ def generate_manifest() -> Dict[str, Any]:
         networks = client.networks.list()
         volumes = client.volumes.list()
     except DockerException as exc:
-        logger.error("Docker query failed: %s", exc)
+        logger.error("docker_query_failed", exc)
         raise
 
     image_set: Set[str] = set()

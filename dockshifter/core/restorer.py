@@ -261,7 +261,7 @@ def _warn_existing_paths(manifest: Dict[str, Any], logger) -> None:
             seen.add(source)
             path = Path(source)
             if path.exists():
-                logger.warning("Volume path already exists: %s", path)
+                logger.warning("volume_path_exists", path)
 
 
 def _collect_1panel_app_dirs(manifest: Dict[str, Any]) -> Set[Path]:
@@ -295,7 +295,7 @@ def _collect_1panel_app_dirs(manifest: Dict[str, Any]) -> Set[Path]:
 def _ensure_1panel_dirs(manifest: Dict[str, Any], logger, dry_run: bool) -> None:
     """Ensure 1Panel application directories exist."""
     if not Path("/opt/1panel").exists():
-        logger.warning("1Panel not detected, skipping app directory verification")
+        logger.warning("skip_1panel_verify")
         return
     for app_dir in sorted(_collect_1panel_app_dirs(manifest)):
         if dry_run:
@@ -433,7 +433,7 @@ def _create_networks(
         if name in {"bridge", "host", "none"}:
             continue
         if name in existing_names:
-            logger.warning("Network already exists: %s", name)
+            logger.warning("network_exists", name)
             continue
         subnet = network.get("subnet")
         gateway = network.get("gateway")
@@ -467,7 +467,7 @@ def _create_containers(
         network_names = container.get("networks", [])
         image = container.get("image") or config.get("Image")
         if not image or not name:
-            logger.warning("Skipping container with missing image or name")
+            logger.warning("skip_container_missing")
             continue
         logger.info("create_container", name)
         if dry_run:
@@ -497,7 +497,7 @@ def _create_containers(
             try:
                 client.networks.get(network).connect(container_obj)
             except DockerException as exc:
-                logger.warning("Failed to connect %s to network %s: %s", name, network, exc)
+                logger.warning("failed_connect_network", name, network, exc)
 
     return created
 
@@ -556,7 +556,7 @@ def restore_bundle(
             try:
                 bundle.unlink()
             except OSError:
-                logger.warning("Failed to remove temporary bundle %s", bundle)
+                logger.warning("failed_remove_temp_bundle", bundle)
         return
 
     checksum_path = Path(f"{bundle}.sha256")
@@ -583,7 +583,7 @@ def restore_bundle(
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         raise
 
     _check_restore_conflicts(manifest, logger)
@@ -643,4 +643,4 @@ def restore_bundle(
         try:
             bundle.unlink()
         except OSError:
-            logger.warning("Failed to remove temporary bundle %s", bundle)
+            logger.warning("failed_remove_temp_bundle", bundle)

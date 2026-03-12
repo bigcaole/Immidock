@@ -123,7 +123,7 @@ def _estimate_image_size(manifest: Dict[str, Any], logger) -> int:
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.warning("Docker connection failed: %s", exc)
+        logger.warning("docker_connection_failed", exc)
         return 0
 
     total = 0
@@ -132,7 +132,7 @@ def _estimate_image_size(manifest: Dict[str, Any], logger) -> int:
             image = client.images.get(image_ref)
             total += int(image.attrs.get("Size", 0) or 0)
         except DockerException as exc:
-            logger.warning("Unable to inspect image %s: %s", image_ref, exc)
+            logger.warning("unable_inspect_image", image_ref, exc)
     return total
 
 
@@ -160,7 +160,7 @@ def _estimate_bundle_size(logger) -> Optional[int]:
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         return None
 
     total = 0
@@ -169,7 +169,7 @@ def _estimate_bundle_size(logger) -> Optional[int]:
         for image in client.images.list():
             image_sizes += int(image.attrs.get("Size", 0) or 0)
     except DockerException as exc:
-        logger.warning("Unable to inspect images: %s", exc)
+        logger.warning("unable_inspect_images", exc)
 
     mount_paths = set()
     try:
@@ -191,7 +191,7 @@ def _estimate_bundle_size(logger) -> Optional[int]:
                         except DockerException:
                             continue
     except DockerException as exc:
-        logger.warning("Unable to inspect container mounts: %s", exc)
+        logger.warning("unable_inspect_container_mounts", exc)
 
     for path in mount_paths:
         path_obj = Path(path)
@@ -269,15 +269,15 @@ def _pack_command(output_path: Path, logger) -> int:
     try:
         manifest = generate_manifest()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         return 1
     except Exception as exc:
-        logger.error("Failed to generate manifest: %s", exc)
+        logger.error("failed_generate_manifest", exc)
         return 1
     try:
         _validate_manifest(manifest, _schema_path())
     except ValidationError as exc:
-        logger.error("Manifest validation failed: %s", exc.message)
+        logger.error("manifest_validation_failed", exc.message)
         return 1
 
     try:
@@ -290,7 +290,7 @@ def _pack_command(output_path: Path, logger) -> int:
         logger.info("estimated_bundle_size", _format_bytes(volume_size + image_size))
         build_bundle(manifest, str(output_path))
     except Exception as exc:
-        logger.error("Bundling failed: %s", exc)
+        logger.error("bundling_failed", exc)
         return 1
 
     logger.info("bundle_written", output_path)
@@ -300,13 +300,13 @@ def _pack_command(output_path: Path, logger) -> int:
 def _inspect_command(input_path: Path, logger) -> int:
     """Inspect an ImmiDock manifest and print a summary."""
     if not input_path.exists():
-        logger.error("Bundle not found at %s", input_path)
+        logger.error("bundle_not_found", input_path)
         return 1
 
     try:
         manifest, bundle_size = _load_manifest_from_bundle(input_path)
     except (OSError, subprocess.CalledProcessError, json.JSONDecodeError) as exc:
-        logger.error("Failed to read bundle: %s", exc)
+        logger.error("failed_read_bundle", exc)
         return 1
 
     containers = manifest.get("containers", [])
@@ -352,10 +352,10 @@ def _restore_command(
             plan=plan,
         )
     except ValidationError as exc:
-        logger.error("Manifest validation failed: %s", exc.message)
+        logger.error("manifest_validation_failed", exc.message)
         return 1
     except Exception as exc:
-        logger.error("Restore failed: %s", exc)
+        logger.error("restore_failed", exc)
         return 1
     return 0
 
@@ -365,7 +365,7 @@ def _migrate_command(target: str, incremental: bool, plan: bool, logger) -> int:
     try:
         migrate_to_host(target, incremental, plan=plan)
     except Exception as exc:
-        logger.error("Migration failed: %s", exc)
+        logger.error("migration_failed", exc)
         return 1
     return 0
 
@@ -469,7 +469,7 @@ def main() -> int:
     elif args.command == "clean":
         result = _clean_command(logger)
     else:
-        logger.error("Unknown command")
+        logger.error("unknown_command")
         result = 1
 
     logger.info("command_finished", args.command, result)

@@ -16,21 +16,21 @@ def _post_sync_request(logger) -> bool:
     try:
         import requests
     except ImportError:
-        logger.warning("requests not installed; skipping API sync")
+        logger.warning("requests_missing")
         return False
 
     logger.info("1panel_syncing")
     try:
         response = requests.post(SYNC_ENDPOINT, timeout=10)
     except requests.RequestException as exc:
-        logger.warning("API sync failed: %s", exc)
+        logger.warning("api_sync_failed", exc)
         return False
 
     if 200 <= response.status_code < 300:
         logger.info("1panel_sync_done")
         return True
 
-    logger.warning("API sync failed with status %s", response.status_code)
+    logger.warning("api_sync_failed_status", response.status_code)
     return False
 
 

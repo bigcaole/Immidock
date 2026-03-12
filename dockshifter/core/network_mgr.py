@@ -25,7 +25,7 @@ def _collect_existing_subnets(client: docker.DockerClient, logger) -> Set[ipaddr
             try:
                 used_subnets.add(ipaddress.ip_network(subnet, strict=False))
             except ValueError:
-                logger.warning("Skipping invalid subnet on host: %s", subnet)
+                logger.warning("invalid_subnet_host", subnet)
     return used_subnets
 
 
@@ -58,7 +58,7 @@ def resolve_network_conflicts(manifest: Dict[str, Any]) -> Dict[str, Any]:
     try:
         client = docker.from_env()
     except DockerException as exc:
-        logger.error("Docker connection failed: %s", exc)
+        logger.error("docker_connection_failed", exc)
         raise
 
     used_subnets = _collect_existing_subnets(client, logger)
@@ -70,7 +70,7 @@ def resolve_network_conflicts(manifest: Dict[str, Any]) -> Dict[str, Any]:
         try:
             candidate = ipaddress.ip_network(subnet, strict=False)
         except ValueError:
-            logger.warning("Skipping invalid subnet in manifest: %s", subnet)
+            logger.warning("invalid_subnet_manifest", subnet)
             continue
 
         original = candidate
