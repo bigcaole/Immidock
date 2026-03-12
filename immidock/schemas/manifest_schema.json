@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ImmiDock Manifest",
+  "type": "object",
+  "required": ["manifest_version", "source_env", "containers", "networks", "volumes", "images"],
+  "properties": {
+    "manifest_version": {
+      "type": "string"
+    },
+    "source_env": {
+      "type": "object",
+      "required": ["hostname", "os", "kernel", "architecture", "docker_version"],
+      "properties": {
+        "hostname": { "type": "string" },
+        "os": { "type": "string" },
+        "kernel": { "type": "string" },
+        "architecture": { "type": "string" },
+        "docker_version": { "type": "string" }
+      }
+    },
+    "containers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "type",
+          "image",
+          "created",
+          "mounts",
+          "networks"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["native_docker", "1panel_app"]
+          },
+          "image": { "type": "string" },
+          "image_digest": { "type": "string" },
+          "created": { "type": "string" },
+          "inspect": {
+            "type": "object"
+          },
+          "mounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "source", "destination"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["bind", "volume"]
+                },
+                "source": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "uid": {
+                  "type": "integer"
+                },
+                "gid": {
+                  "type": "integer"
+                },
+                "mode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "networks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "networks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "driver"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "driver": {
+            "type": "string"
+          },
+          "subnet": {
+            "type": "string"
+          },
+          "gateway": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "volumes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "driver": {
+            "type": "string"
+          },
+          "mountpoint": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

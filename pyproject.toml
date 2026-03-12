@@ -1,0 +1,22 @@
+[project]
+name = "immidock"
+version = "1.0.0"
+description = "Docker and 1Panel migration tool"
+requires-python = ">=3.10"
+dependencies = [
+    "docker",
+    "pyyaml",
+    "jsonschema",
+    "requests",
+    "tqdm",
+]
+
+[project.scripts]
+immidock = "immidock.cli.main:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+immidock = ["schemas/*.json"]
