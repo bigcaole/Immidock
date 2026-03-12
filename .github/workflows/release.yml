@@ -64,6 +64,9 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -83,3 +86,35 @@ jobs:
             dist/immidock-linux-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify release and summarize
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${TAG_NAME}"
+          RELEASE_JSON=$(curl -sSL -H "Authorization: Bearer ${GITHUB_TOKEN}" "$api")
+          export RELEASE_JSON
+          python3 - <<'PY'
+          import json, os, sys
+          data = os.environ.get("RELEASE_JSON", "")
+          try:
+              payload = json.loads(data)
+          except json.JSONDecodeError:
+              print("Release verification failed: invalid JSON")
+              sys.exit(1)
+          if "html_url" not in payload:
+              print("Release verification failed: release not found")
+              sys.exit(1)
+          assets = [a.get("name") for a in payload.get("assets", [])]
+          print(f"Release URL: {payload['html_url']}")
+          print(f"Assets: {', '.join(assets) if assets else 'none'}")
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary:
+              with open(summary, "a", encoding="utf-8") as handle:
+                  handle.write(f"## Release Published\\n")
+                  handle.write(f"- Tag: {os.environ.get('TAG_NAME')}\\n")
+                  handle.write(f"- URL: {payload['html_url']}\\n")
+                  handle.write(f"- Assets: {', '.join(assets) if assets else 'none'}\\n")
+          PY
+        shell: bash
