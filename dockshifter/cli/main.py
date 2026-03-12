@@ -264,8 +264,11 @@ def _doctor_command(logger) -> int:
     return status
 
 
-def _pack_command(output_path: Path, logger) -> int:
+def _pack_command(output_path: Path, logger, beginner: bool) -> int:
     """Run the pack command workflow."""
+    if beginner:
+        logger.info("beginner_mode_on")
+        logger.info("beginner_pack_intro")
     try:
         manifest = generate_manifest()
     except DockerException as exc:
@@ -274,6 +277,8 @@ def _pack_command(output_path: Path, logger) -> int:
     except Exception as exc:
         logger.error("failed_generate_manifest", exc)
         return 1
+    if beginner:
+        logger.info("beginner_pack_manifest")
     try:
         _validate_manifest(manifest, _schema_path())
     except ValidationError as exc:
@@ -281,6 +286,8 @@ def _pack_command(output_path: Path, logger) -> int:
         return 1
 
     try:
+        if beginner:
+            logger.info("beginner_pack_bundle")
         logger.info("scan_volumes")
         volume_size = _estimate_volume_size(manifest)
         logger.info("volumes_size", _format_bytes(volume_size))
@@ -341,9 +348,20 @@ def _inspect_command(input_path: Path, logger) -> int:
 
 
 def _restore_command(
-    bundle_path: Path, dry_run: bool, skip_1panel_sync: bool, plan: bool, logger
+    bundle_path: Path,
+    dry_run: bool,
+    skip_1panel_sync: bool,
+    plan: bool,
+    logger,
+    beginner: bool,
 ) -> int:
     """Restore an ImmiDock bundle onto the local host."""
+    if beginner:
+        logger.info("beginner_mode_on")
+        logger.info("beginner_restore_intro")
+        logger.info("beginner_restore_volumes")
+        logger.info("beginner_restore_images")
+        logger.info("beginner_restore_containers")
     try:
         restore_bundle(
             str(bundle_path),
@@ -360,8 +378,15 @@ def _restore_command(
     return 0
 
 
-def _migrate_command(target: str, incremental: bool, plan: bool, logger) -> int:
+def _migrate_command(
+    target: str, incremental: bool, plan: bool, logger, beginner: bool
+) -> int:
     """Migrate an ImmiDock bundle to a remote host via SSH."""
+    if beginner:
+        logger.info("beginner_mode_on")
+        logger.info("beginner_migrate_intro")
+        logger.info("beginner_migrate_transfer")
+        logger.info("beginner_migrate_restore")
     try:
         migrate_to_host(target, incremental, plan=plan)
     except Exception as exc:
@@ -395,6 +420,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--lang",
         choices=["en", "zh"],
         help="Language for CLI output (en or zh)",
+    )
+    parser.add_argument(
+        "--beginner",
+        action="store_true",
+        help="Show beginner-friendly step explanations",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -455,15 +485,22 @@ def main() -> int:
     logger.info("command_started", args.command)
 
     if args.command == "pack":
-        result = _pack_command(Path(args.output), logger)
+        result = _pack_command(Path(args.output), logger, args.beginner)
     elif args.command == "inspect":
         result = _inspect_command(Path(args.input), logger)
     elif args.command == "restore":
         result = _restore_command(
-            Path(args.input), args.dry_run, args.skip_1panel_sync, args.plan, logger
+            Path(args.input),
+            args.dry_run,
+            args.skip_1panel_sync,
+            args.plan,
+            logger,
+            args.beginner,
         )
     elif args.command == "migrate":
-        result = _migrate_command(args.target, args.incremental, args.plan, logger)
+        result = _migrate_command(
+            args.target, args.incremental, args.plan, logger, args.beginner
+        )
     elif args.command == "doctor":
         result = _doctor_command(logger)
     elif args.command == "clean":

@@ -124,6 +124,18 @@ MESSAGES_EN = {
     "failed_connect_network": "Failed to connect %s to network %s: %s",
     "failed_remove_temp_bundle": "Failed to remove temporary bundle %s",
     "image_export_failed": "Image export failed for %s: %s",
+    "beginner_mode_on": "Beginner mode enabled",
+    "beginner_pack_intro": "Step 1/3: Scanning and packaging Docker environment",
+    "beginner_pack_manifest": "Step 2/3: Generating manifest and validating schema",
+    "beginner_pack_bundle": "Step 3/3: Creating bundle file (backup.dsh)",
+    "beginner_restore_intro": "Step 1/4: Reading bundle and validating manifest",
+    "beginner_restore_volumes": "Step 2/4: Restoring volumes to the host",
+    "beginner_restore_images": "Step 3/4: Loading Docker images",
+    "beginner_restore_containers": "Step 4/4: Creating and starting containers",
+    "beginner_migrate_intro": "Step 1/3: Creating bundle on source host",
+    "beginner_migrate_transfer": "Step 2/3: Transferring data over SSH",
+    "beginner_migrate_restore": "Step 3/3: Restoring environment on target host",
+    "beginner_tip_lang": "Tip: use --lang zh to see Chinese output",
 }
 
 MESSAGES_ZH = {
@@ -244,6 +256,18 @@ MESSAGES_ZH = {
     "failed_connect_network": "连接网络失败 %s -> %s：%s",
     "failed_remove_temp_bundle": "清理临时迁移包失败：%s",
     "image_export_failed": "镜像导出失败 %s：%s",
+    "beginner_mode_on": "小白模式已启用",
+    "beginner_pack_intro": "第 1/3 步：扫描并打包 Docker 环境",
+    "beginner_pack_manifest": "第 2/3 步：生成清单并校验格式",
+    "beginner_pack_bundle": "第 3/3 步：生成迁移包文件（backup.dsh）",
+    "beginner_restore_intro": "第 1/4 步：读取迁移包并校验清单",
+    "beginner_restore_volumes": "第 2/4 步：恢复数据卷到宿主机",
+    "beginner_restore_images": "第 3/4 步：导入 Docker 镜像",
+    "beginner_restore_containers": "第 4/4 步：重建并启动容器",
+    "beginner_migrate_intro": "第 1/3 步：在源服务器创建迁移包",
+    "beginner_migrate_transfer": "第 2/3 步：通过 SSH 传输数据",
+    "beginner_migrate_restore": "第 3/3 步：在目标服务器恢复环境",
+    "beginner_tip_lang": "提示：可使用 --lang zh 强制中文输出",
 }
 
 _SUPPORTED = {"en", "zh"}

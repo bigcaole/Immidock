@@ -85,6 +85,14 @@ immidock pack --lang zh --output backup.dsh
 immidock restore --lang zh backup.dsh
 ```
 
+小白模式（更详细中文提示）：
+
+```bash
+immidock pack --beginner --lang zh --output backup.dsh
+immidock restore --beginner --lang zh backup.dsh
+immidock migrate --beginner --lang zh root@server
+```
+
 ## 发布说明（维护者）
 
 使用 tag 触发 Release 构建：
