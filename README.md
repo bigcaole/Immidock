@@ -14,6 +14,11 @@ ImmiDock 是一个用于迁移 Docker 与 1Panel 应用环境的工具。
 - SSH 跨服务器迁移
 - 1Panel 应用同步
 
+重要说明：
+
+- 不支持 Docker 镜像部署（不提供容器化运行）
+- 仅支持直接部署到宿主机
+
 ## 安装方式
 
 ### 方式1：一键安装（小白推荐）
@@ -57,6 +62,27 @@ immidock doctor
 immidock pack --output backup.dsh
 immidock restore backup.dsh
 immidock migrate root@server
+```
+
+## 最简使用流程（中文注释）
+
+```bash
+# 1. 在源服务器生成迁移包
+immidock pack --output backup.dsh
+
+# 2. 传输迁移包到新服务器
+scp backup.dsh root@新服务器IP:/root/
+
+# 3. 在新服务器恢复环境
+immidock restore backup.dsh
+```
+
+提示：所有命令支持中文输出，例如：
+
+```bash
+immidock doctor --lang zh
+immidock pack --lang zh --output backup.dsh
+immidock restore --lang zh backup.dsh
 ```
 
 ## 发布说明（维护者）
